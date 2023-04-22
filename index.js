@@ -12,7 +12,7 @@ app.get('/', (req, res) => {
 app.get('/Tasks', (req, res) => {
   con.query('select * from Tasks', (err, result) => {
     if (err) {
-      res.status(500).send('Failed to get Tasks', err);
+      res.status(500).send(err);
     } else {
       res.status(200).send(result);
     }

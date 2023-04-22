@@ -6,6 +6,11 @@ const con = mysql.createConnection({
   database: 'u682812974_ricwebdb'
 });
 
+// heartbeat query to keep connection alive
+setInterval(() => {
+  con.query('select 1');
+}, 3000);
+
 con.connect((err) => {
   if (err) {
     console.log('Connection failed. Error:\n', err);
