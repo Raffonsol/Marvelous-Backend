@@ -16,13 +16,20 @@ app.get('/', (req, res) => {
 });
 
 app.get('/Tasks', (req, res) => {
-  con.query('select * from Tasks', (err, result) => {
+  const status = req.query.status;
+  con.query('select * from Tasks where `status` = ?', status, (err, result) => {
     if (err) {
       res.status(500).send(err);
     } else {
+      let formattedResults = result;
+      if (status === 'Done') {
+        // If it's done, only show the 10 most recently completed
+        formattedResults = formattedResults.sort((a, b) => a.updated_at < b.updated_at).reverse();
+        formattedResults = formattedResults.slice(0, 10);
+      }
       res.status(200).send(
         // alphabetical sorting
-        result.sort((a, b) => a.name.localeCompare(b.name))
+        formattedResults.sort((a, b) => a.name.localeCompare(b.name))
       );
     }
   });
@@ -35,6 +42,23 @@ app.post('/Task', jsonParser, (req, res) => {
     data.name = 'New Task';
   }
   con.query('insert into Tasks set ?', data, (err, result) => {
+    if (err) {
+      res.status(500).send(err);
+    } else {
+      res.status(200).send(result);
+    }
+  });
+});
+
+app.patch('/Task/:id', jsonParser, (req, res) => {
+  const id = req.params.id;
+
+  con.query('update `Tasks`'
+  + ' set `status` ='
+  + ' case when `status` = \'To Do\' then \'Done\''
+  + ' else \'To Do\' end,'
+  + ' `updated_at` = NOW()'
+  + ' where `Tasks`.`id` = ?', id, (err, result) => {
     if (err) {
       res.status(500).send(err);
     } else {
