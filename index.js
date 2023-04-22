@@ -1,9 +1,15 @@
 const con = require('./connection');
 const express = require('express');
 const bodyParser = require('body-parser');
+const cors = require('cors');
 
 const app = express();
 const jsonParser = bodyParser.json();
+
+app.use(cors({
+  credentials: true,
+  origin: true,
+}));
 
 app.get('/', (req, res) => {
   res.status(200).send('api running');
@@ -14,7 +20,10 @@ app.get('/Tasks', (req, res) => {
     if (err) {
       res.status(500).send(err);
     } else {
-      res.status(200).send(result);
+      res.status(200).send(
+        // alphabetical sorting
+        result.sort((a, b) => a.name.localeCompare(b.name))
+      );
     }
   });
 });
