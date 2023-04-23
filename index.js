@@ -2,6 +2,7 @@ const con = require('./connection');
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const controller = require('./controller');
 
 const app = express();
 const jsonParser = bodyParser.json();
@@ -21,16 +22,7 @@ app.get('/Tasks', (req, res) => {
     if (err) {
       res.status(500).send(err);
     } else {
-      let formattedResults = result;
-      if (status === 'Done') {
-        // If it's done, only show the 10 most recently completed
-        formattedResults = formattedResults.sort((a, b) => a.updated_at < b.updated_at).reverse();
-        formattedResults = formattedResults.slice(0, 10);
-      }
-      res.status(200).send(
-        // alphabetical sorting
-        formattedResults.sort((a, b) => a.name.localeCompare(b.name))
-      );
+      res.status(200).send(controller.formatTasks(status, result));
     }
   });
 });
