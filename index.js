@@ -76,3 +76,4 @@ app.delete('/Tasks', jsonParser, (req, res) => {
 });
 
 app.listen(4200);
+module.exports = app;
