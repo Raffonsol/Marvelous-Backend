@@ -67,4 +67,20 @@ app.patch('/Task/:id', jsonParser, (req, res) => {
   });
 });
 
+app.delete('/Tasks', jsonParser, (req, res) => {
+  const status = req.query.status;
+  const finish = (err, result) => {
+    if (err) {
+      res.status(500).send(err);
+    } else {
+      res.status(200).send(result);
+    }
+  }
+  if (!status ) {
+    con.query('delete from Tasks', finish);
+  } else {
+    con.query('delete from Tasks where status = ?', status, finish);
+  }
+});
+
 app.listen(4200);
